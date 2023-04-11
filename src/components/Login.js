@@ -15,8 +15,15 @@ const Login = () => {
   const navigate=useNavigate();
   const handlesubmit = (e) => {
     e.preventDefault();
-    localStorage.setItem("user",JSON.stringify(user));
-    navigate("/")
+  let  Email = "Admin@gmail.com";
+let Password="Admin@123";
+if(user.email !== Email || user.password !== Password){
+  alert("invalid credentials !!!")
+}else{
+  localStorage.setItem("user",JSON.stringify(user));
+  navigate("/")
+}
+   
   };
 
   return (

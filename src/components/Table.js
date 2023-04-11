@@ -62,15 +62,13 @@ export default function Tabel() {
 }
 
 function generateExcelData() {
-  // const data = ;
-  // console.log(data)
-
-  const header = ['Date', 'Area Name','Confirmed','Death', 'Death Rate'];
+   const header = ['Date', 'Area Name','Confirmed','Death', 'Death Rate'];
 
   const rows = [header, ...data.map(item => [item.date, item.areaName, item.confirmed, item.death, item.deathRate])];
 
   return rows;
 }
+
 function downloadExcel() {
   const Report = generateExcelData();
 
