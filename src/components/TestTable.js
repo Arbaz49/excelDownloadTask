@@ -33,15 +33,15 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function Tabel() {
+export default function TestTable() {
   const [data, setdata] = useState([]);
   useEffect(() => {
     const getdata = async () => {
       try {
         let { data } = await axios(
-          "https://api.coronavirus.data.gov.uk/v1/data"
+          "https://api.escuelajs.co/api/v1/users"
         );
-        setdata(data.data);
+        setdata(data);
         console.log(data);
       } catch (err) {
         console.log(err.message);
@@ -96,28 +96,28 @@ const  handleDelete=()=>{
           <TableHead>
             <TableRow>
               <StyledTableCell>Date</StyledTableCell>
-              <StyledTableCell align="right">Area Name</StyledTableCell>
-              <StyledTableCell align="right">Confirmed</StyledTableCell>
-              <StyledTableCell align="right">Death</StyledTableCell>
-              <StyledTableCell align="right">Death Rate</StyledTableCell>
-              <StyledTableCell align="right"></StyledTableCell>
+              <StyledTableCell align="right">id</StyledTableCell>
+              <StyledTableCell align="right">Name</StyledTableCell>
+              <StyledTableCell align="right">email</StyledTableCell>
+              <StyledTableCell align="right">role</StyledTableCell>
+              {/* <StyledTableCell align="right"></StyledTableCell> */}
 
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.slice((page - 1) * 10, (page - 1) * 10 + 10).map((row) => (
+            {data.slice((page - 1) * 10, (page - 1) * 10 + 10).map((row,index) => (
               <StyledTableRow key={row.name}>
                 <StyledTableCell component="th" scope="row">
-                  {new Date(  row?.date).toDateString()}
+                  {index+1}
                 </StyledTableCell>
-                <StyledTableCell align="right">{row?.areaName}</StyledTableCell>
+                <StyledTableCell align="right">{row?.name}</StyledTableCell>
                 <StyledTableCell align="right">
-                  {numberWithCommas(row?.confirmed)}
+                  {row?.email}
                 </StyledTableCell>
-                <StyledTableCell align="right">{numberWithCommas(row?.death)}</StyledTableCell>
-                <StyledTableCell align="right">
+                <StyledTableCell align="right">{row?.role}</StyledTableCell>
+                {/* <StyledTableCell align="right">
                   {numberWithCommas(row?.deathRate)}
-                </StyledTableCell>
+                </StyledTableCell> */}
                 
 
                 <StyledTableCell align="right">
