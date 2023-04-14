@@ -32,8 +32,8 @@ useEffect(()=>{
 
 const handleAdvice=()=>{
   setad(!ad)
-  toast(`Advice:"${adviceArray}"`, {
-    position: "top-center",
+  toast(`"${adviceArray}"`, {
+    position: "top-left",
     autoClose: 4000,
     hideProgressBar: true,
     closeOnClick: true,

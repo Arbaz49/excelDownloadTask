@@ -178,6 +178,7 @@ export default function TestingTable() {
           />
         </div>
         <ToastContainer
+        style={{width:"400px",color:"black",fontWeight:"bold"}}
           position="top-center"
           autoClose={500}
           hideProgressBar={false}
