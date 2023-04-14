@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import * as XLSX from "xlsx";
+import { Avatar } from "@mui/material";
 
 const columns = [
   { field: "id", headerName: "ID", width: 70 },
@@ -23,6 +24,7 @@ const columns = [
     field: "avatar",
     headerName: "Avatar",
     width: 190,
+    renderCell: (params) => <Avatar src={params.row.avatar} />
   },
   {
     field: "creationAt",
