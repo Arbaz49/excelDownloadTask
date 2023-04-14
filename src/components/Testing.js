@@ -69,7 +69,7 @@ export default function TestingTable() {
   };
 
   function generateExcelData() {
-    const header = ["Date", "Area Name", "Confirmed", "Death", "Death Rate"];
+    const header = ["Date", "Name", "email", "Role", "Avatar"];
 
     const rows = [
       header,
@@ -142,13 +142,14 @@ export default function TestingTable() {
                 );
               })}
               <input
+              id="colorField"
               className="rounded"
                 type="color"
                 name="color"
                 onChange={(e) => handleColor(e)}
                 value={color.color}
               />
-              <button className={`text-${bgColor==""?"black":"white"}`} onClick={addColor}>add color</button>
+              <button className={`text-${bgColor==""?"black":"white"} bg-slate-400 rounded pr-1 pl-1`} onClick={addColor}>add color</button>
             </div>
           </div>
           <DataGrid

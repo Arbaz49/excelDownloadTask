@@ -3,3 +3,49 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+#colorField{
+
+  appearance: none;
+  cursor: pointer;
+  border: none;
+  height: 30px;
+  width: 30px;
+}
+
+/* input[type="color"] {
+  appearance: none;
+  border: none;
+  padding:0;
+
+} */
+#colorField {
+  padding: 0;
+  /* Declare the color variable */
+  --color: rgb(70, 206, 234);
+  /* We will control height and width of input from here. */
+  width: 25px;
+  height: 25px;
+  position: relative;
+  margin: 0px 10px;
+  border: 1px solid black;
+}
+
+/* Create the pseudo class and add styling */
+#colorField::before {
+  content: '';
+  /* Used to center it on top of the input. */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* This allows you to click on the main input. */
+  pointer-events: none;
+  /* Set height and width more than that of input. */
+  width: 150%;
+  height: 150%;
+  /* Implement the background using css varible. */
+  background: var(--color);
+  /* All the above styles add basic functunality. We can add further styling below. */
+  border-radius: 50%;
+}
