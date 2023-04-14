@@ -1,154 +1,195 @@
-import React, { useState, useEffect } from "react";
-import { styled } from "@mui/material/styles";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import * as React from "react";
+import { DataGrid } from "@mui/x-data-grid";
+
 import axios from "axios";
-import { Pagination } from "@mui/material";
-import * as XLSX from 'xlsx';
-import {AiFillDelete} from "react-icons/ai"
 import { ToastContainer, toast } from "react-toastify";
+import * as XLSX from "xlsx";
+import { Avatar } from "@mui/material";
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
+const columns = [
+  { field: "id", headerName: "ID", width: 70 },
+  { field: "name", headerName: "Name", width: 180 },
+  { field: "email", headerName: "Email", width: 180 },
+  {
+    field: "password",
+    headerName: "Password",
+    width: 180,
   },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+  {
+    field: "role",
+    headerName: "Role",
+    width: 180,
   },
-}));
+  {
+    field: "avatar",
+    headerName: "Avatar",
+    width: 190,
+    renderCell: (params) => <Avatar src={params.row.avatar} />
+  },
+  {
+    field: "creationAt",
+    headerName: "Created Date",
+    width: 180,
+  },
+];
 
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
+export default function TestingTable() {
+  const [data, setdata] = React.useState([]);
+  const [todeleteIds, setTodeleteIds] = React.useState([]);
+  const [page, setPage] = React.useState(1);
+  const [limit, setLimit] = React.useState(10);
+  const [color, setColor] = React.useState({
+    color: "#15a8cf",
+  });
+  const [colorArray, setColorArray] = React.useState([]);
 
-export default function Tabel() {
-  const [data, setdata] = useState([]);
-  useEffect(() => {
+  const rows = data
+    .map((ele) => ele)
+    .filter((ele) => {
+      let date = new Date(ele.creationAt).toDateString();
+      return (ele.creationAt = date);
+    });
+  // const rows = data.map((ele)=>ele)
+  React.useEffect(() => {
     const getdata = async () => {
       try {
-        let { data } = await axios(
-          "https://api.coronavirus.data.gov.uk/v1/data"
-        );
-        setdata(data.data);
-        console.log(data);
+        let { data } = await axios("https://api.escuelajs.co/api/v1/users");
+        setdata(data);
       } catch (err) {
         console.log(err.message);
       }
     };
     getdata();
   }, []);
-  const [page, setpage] = useState(1);
-  const handlePage = (e, value) => {
-    setpage(value);
+  const habdleDeleteMultiple = () => {
+    if (todeleteIds.length < 1) {
+      toast.error("select multiple");
+    } else {
+      setdata(data.filter((ele) => !todeleteIds.includes(ele.id)));
+      toast.success("deleted successfully");
+    }
   };
 
-  function numberWithCommas(x) {
-    x = x.toString();
-    var pattern = /(-?\d+)(\d{3})/;
-    while (pattern.test(x))
-        x = x.replace(pattern, "$1,$2");
-    return x;
-}
+  function generateExcelData() {
+    const header = ["Date", "Name", "email", "Role", "Avatar"];
 
-function generateExcelData() {
-   const header = ['Date', 'Area Name','Confirmed','Death', 'Death Rate'];
+    const rows = [
+      header,
+      ...data
+        .slice((page - 1) * limit, (page - 1) * limit + limit)
+        .map((item) => [
+          new Date(item.creationAt).toDateString(),
+          item.name,
+          item.email,
+          item.role,
+          item.avatar,
+        ]),
+    ];
 
-  const rows = [header, ...data.map(item => [new Date(item.date).toDateString(), item.areaName, item.confirmed, item.death, item.deathRate])];
+    return rows;
+  }
 
-  return rows;
-}
+  function downloadExcel() {
+    const Report = generateExcelData();
 
-function downloadExcel() {
-  const Report = generateExcelData();
+    const ws = XLSX.utils.aoa_to_sheet(Report);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+    XLSX.writeFile(wb, "data.xlsx");
+  }
 
-  const ws = XLSX.utils.aoa_to_sheet(Report);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-  XLSX.writeFile(wb, 'data.xlsx');
-}
-
-const  handleDelete=()=>{
-  toast("deleted successfully")
-}
-
-
-
+  const handleColor = (e) => {
+    setColor({ color: e.target.value});
+  };
+  const addColor = () => {
+    if(colorArray.length >=3){
+      toast.error("can select only 3 colors")
+    }else{
+      
+      setColorArray([...colorArray, color]);
+    }
+  };
+  console.log(colorArray);
+  const [bgColor, setBgColor] = React.useState("");
+  const handlebgColor = (selectedColor) => {
+    setBgColor(selectedColor);
+    console.log("color clicked", selectedColor);
+    setColorArray(colorArray.filter((color) =>color.color!==selectedColor));
+  };
   return (
     <>
-<div className="flex justify-end">
+      <div style={{ backgroundColor: bgColor, color: "white", height: "90vh",paddingTop:"10px" }}>
+        <div style={{ height: 630, width: "80%", margin: "auto" }}>
+          <div className="flex justify-around">
+            <button
+              onClick={habdleDeleteMultiple}
+              className="bg-black text-white p-1 rounded"
+            >
+              Delete All
+            </button>
+            <button className={`text-${bgColor==""?"black":"white"}`} onClick={downloadExcel}>download</button>
 
-     <button className="p-1 bg-lime-500 text-white" onClick={downloadExcel}>download</button>
-</div>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Date</StyledTableCell>
-              <StyledTableCell align="right">Area Name</StyledTableCell>
-              <StyledTableCell align="right">Confirmed</StyledTableCell>
-              <StyledTableCell align="right">Death</StyledTableCell>
-              <StyledTableCell align="right">Death Rate</StyledTableCell>
-              <StyledTableCell align="right"></StyledTableCell>
-
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {data.slice((page - 1) * 10, (page - 1) * 10 + 10).map((row) => (
-              <StyledTableRow key={row.name}>
-                <StyledTableCell component="th" scope="row">
-                  {new Date(  row?.date).toDateString()}
-                </StyledTableCell>
-                <StyledTableCell align="right">{row?.areaName}</StyledTableCell>
-                <StyledTableCell align="right">
-                  {numberWithCommas(row?.confirmed)}
-                </StyledTableCell>
-                <StyledTableCell align="right">{numberWithCommas(row?.death)}</StyledTableCell>
-                <StyledTableCell align="right">
-                  {numberWithCommas(row?.deathRate)}
-                </StyledTableCell>
-                
-
-                <StyledTableCell align="right">
-                <AiFillDelete className="hover:cursor-pointer" onClick={()=>handleDelete()}  />
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <div style={{width:"100%",display:"flex",justifyContent:"flex-end"}}>
-
-      <Pagination
-      style={{padding:"10px"}}
-        onChange={(e, value) => handlePage(e, value)}
-        count={(data?.length / 10).toFixed(0)}
-        variant="outlined"
-        />
+            <div className="flex">
+              {colorArray.map((color) => {
+                return (
+                  <div
+                    onClick={() => handlebgColor(color.color)}
+                    style={{
+                      border: "1px solid black",
+                      width: "30px",
+                      height: "30px",
+                      backgroundColor: color.color,
+                    }}
+                  ></div>
+                );
+              })}
+              <input
+              id="colorField"
+              className="rounded"
+                type="color"
+                name="color"
+                onChange={(e) => handleColor(e)}
+                value={color.color}
+              />
+              <button className={`text-${bgColor==""?"black":"white"} bg-slate-400 rounded pr-1 pl-1`} onClick={addColor}>add color</button>
+            </div>
+          </div>
+          <DataGrid
+          style={{color:bgColor==""?"black":"white"}}
+            rows={rows}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={5}
+            checkboxSelection
+            pageSizeOptions={[5, 10, 25]}
+            onRowSelectionModelChange={(data) => {
+              setTodeleteIds(data);
+            }}
+            initialState={{
+              pagination: {
+                paginationModel: { pageSize: 10, page: 0 },
+              },
+            }}
+            onPaginationModelChange={(a) => {
+              console.log(a);
+              setPage(a.page + 1);
+              setLimit(a.pageSize);
+            }}
+          />
         </div>
         <ToastContainer
-position="top-center"
-autoClose={500}
-hideProgressBar={false}
-newestOnTop={false}
-closeOnClick
-rtl={false}
-pauseOnFocusLoss
-draggable
-pauseOnHover={false}
-theme="light"
-/>
+          position="top-center"
+          autoClose={500}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover={false}
+          theme="light"
+        />
+      </div>
     </>
   );
 }
